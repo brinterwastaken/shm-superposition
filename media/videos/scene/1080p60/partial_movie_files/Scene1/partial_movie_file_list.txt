@@ -1,9 +1,0 @@
-# This file is used internally by FFMPEG.
-file 'file:D:/Projects/shm-superposition/media/videos/scene/1080p60/partial_movie_files/Scene1/2175725529_3443155033_1462877341.mp4'
-file 'file:D:/Projects/shm-superposition/media/videos/scene/1080p60/partial_movie_files/Scene1/3653574416_946178052_3656623634.mp4'
-file 'file:D:/Projects/shm-superposition/media/videos/scene/1080p60/partial_movie_files/Scene1/4250579580_2404864042_1710501979.mp4'
-file 'file:D:/Projects/shm-superposition/media/videos/scene/1080p60/partial_movie_files/Scene1/1025117074_2352976003_2425570032.mp4'
-file 'file:D:/Projects/shm-superposition/media/videos/scene/1080p60/partial_movie_files/Scene1/605678438_1138378240_833902167.mp4'
-file 'file:D:/Projects/shm-superposition/media/videos/scene/1080p60/partial_movie_files/Scene1/2676707438_2229301673_2083367908.mp4'
-file 'file:D:/Projects/shm-superposition/media/videos/scene/1080p60/partial_movie_files/Scene1/3040862984_3383936384_3914700789.mp4'
-file 'file:D:/Projects/shm-superposition/media/videos/scene/1080p60/partial_movie_files/Scene1/3518324375_3467822883_1833547850.mp4'
