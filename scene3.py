@@ -1,23 +1,18 @@
 from manim import *
 
-class Scene2(Scene):
+class Scene3(Scene):
     def construct(self):
-
-        # Axes
-
-        ax1 = Axes(x_range=[-3.5, 3.5, 0.5], y_range=[-3, 3, 0.5], x_length=7, y_length=6, tips=False).move_to(LEFT*2.5) 
-        ax2 = Axes(x_range=[-2.5, 2.5, 0.5], y_range=[-2, 2, 0.5], x_length=5, y_length=4, tips=False).move_to(RIGHT*3.5)
 
         # Declaring the various objects
 
-        r1, r2 = 2.25, 1.25
-        omega = PI
+        r1, r2 = 2.2, 1.2
+        omega0 = 3/4 * PI
 
         phi1 = 30 * DEGREES
         phi2 = 60 * DEGREES
 
-        c1 = Circle(radius=r1, color=BLUE_A).shift(LEFT*2.5)
-        c2 = Circle(radius=r2, color=GREEN_A).shift(RIGHT*3.5)
+        c1 = Circle(radius=r1, color=BLUE_A).shift(LEFT*2)
+        c2 = Circle(radius=r2, color=GREEN_A).shift(RIGHT*2.75)
 
         p1 = Dot(color=BLUE_B).move_to(c1.point_at_angle(phi1))
         p2 = Dot(color=GREEN_B).move_to(c2.point_at_angle(phi2))
@@ -28,8 +23,8 @@ class Scene2(Scene):
         shm1 = Dot(color=BLUE, radius=0.1).move_to(np.array([c1.get_x(), p1.get_y(),0]))
         shm2 = Dot(color=GREEN, radius=0.1).move_to(np.array([c2.get_x(), p2.get_y(),0]))
 
-        label1 = MathTex(r"y_1 = A_1\sin(\omega t + \phi_1)").shift(DOWN*3.5 + LEFT * 2.5).scale(0.7)
-        label2 = MathTex(r"y_2 = A_2\sin(\omega t + \phi_2)").shift(DOWN*3.5 + RIGHT * 3.5).scale(0.7)
+        label1 = MathTex(r"y_1 = A_1sin(\omega t + \phi_1)").shift(DOWN*3 + LEFT * 2).scale(0.75)
+        label2 = MathTex(r"y_2 = A_2sin(\omega t + \phi_2)").shift(DOWN*3 + RIGHT * 2.75).scale(0.75)
 
         a1 = Angle(Line(), pos1, radius=0.5, other_angle=False)
         a1label = MathTex(r"\phi_1").move_to(
@@ -45,14 +40,6 @@ class Scene2(Scene):
             ).point_from_proportion(0.5)
         ).scale(0.75)
 
-        # Displaying a title
-
-        title = Text("Simple Harmonic Motion", font_size=48, gradient=(BLUE, TEAL, GREEN))
-        subtitle = Text("Superposition of oscillators", font_size=24, gradient=(BLUE_A, TEAL_A, GREEN_A))
-        self.play(Write(VGroup(title, subtitle).arrange(DOWN)))
-        self.wait()
-        self.play(Unwrite(title, reverse=False), Unwrite(subtitle, reverse=False))
-
         # Creating the circles, points and position vectors
 
         self.play(Create(c1), Create(c2), Create(p1), Create(p2))
@@ -65,11 +52,6 @@ class Scene2(Scene):
         self.play(FadeOut(a1, a2, a1label, a2label))
 
         theta_tracker = ValueTracker(0)
-
-        # Equations of the sine waves
-
-        wave1 = always_redraw(lambda: ax1.plot(lambda x: np.sin(theta_tracker.get_value() + phi1 - x)*r1, x_range=[0, 3.5], stroke_width=2, color=BLUE_B))  
-        wave2 = always_redraw(lambda: ax2.plot(lambda x: np.sin(theta_tracker.get_value() + phi2 - x)*r2, x_range=[0, 2.5], stroke_width=2, color=GREEN_B))
 
         # Updaters for SHM points and circle points
 
@@ -109,7 +91,7 @@ class Scene2(Scene):
         # First rotating animation
 
         self.play(
-            theta_tracker.animate.set_value(omega * 3.5),
+            theta_tracker.animate.set_value(omega0 * 3.5),
             run_time=3.5,
             rate_func=linear
         )
@@ -118,29 +100,25 @@ class Scene2(Scene):
         # Showing how SHM is related to the circular motion
 
         self.play(
-            theta_tracker.animate.set_value(theta + omega * 0.5),
+            theta_tracker.animate.set_value(theta + omega0 * 0.5),
             Create(shm1),
             Create(shm2),
             Create(label1),
             Create(label2),
-            Create(ax1), 
-            Create(ax2),
             c1.animate.fade(darkness=0.6),
             c2.animate.fade(darkness=0.6),
             pos1.animate.fade(darkness=0.6),
             pos2.animate.fade(darkness=0.6),
             p1.animate.set_opacity(0.5),
             p2.animate.set_opacity(0.5),
-            Create(wave1),
-            Create(wave2),
             run_time=0.5,
             rate_func=linear
         )
         theta = theta_tracker.get_value()
 
         self.play(
-            theta_tracker.animate.set_value(theta + omega * 7.5),
-            run_time=7.5,
+            theta_tracker.animate.set_value(theta + omega0 * 3.5),
+            run_time=3.5,
             rate_func=linear
         )
         theta = theta_tracker.get_value()
@@ -148,68 +126,40 @@ class Scene2(Scene):
         # Fading out the SHM representing points
 
         self.play(
-            theta_tracker.animate.set_value(theta + omega * 0.5),
-            FadeOut(shm1, shm2),
-            Uncreate(wave1),
-            Uncreate(wave2),
-            Uncreate(ax1), 
-            Uncreate(ax2),
-            run_time=0.75,
-            rate_func=rate_functions.ease_out_sine
-        )
-        theta = theta_tracker.get_value()
-
-        self.wait()
-
-        # Moving the circles so that c1 is in the center and c2 is at p1
-        
-        new_eqn = MathTex(r"y_{res} = A_1\sin(\omega t + \phi_1) + A_2sin(\omega t + \phi_2)").shift(DOWN * 3.5).scale(0.7)
-
-        self.play(
-            c1.animate.center(),
-            c2.animate.move_to(c1.point_at_angle(theta + phi1)).shift(RIGHT*2.5),
-            Transform(VGroup(label1, label2),new_eqn, replace_mobject_with_target_in_scene=True),
-            run_time=1,
+            theta_tracker.animate.set_value(theta + omega0 * 0.5),
+            FadeOut(shm1, shm2, label1, label2),
+            run_time=0.5,
             rate_func=linear
         )
         theta = theta_tracker.get_value()
 
-        self.wait(2)
+        # Moving the circles so that c1 is in the center and c2 is at p1
 
-        # Adding a new vector arrow that is the resultant of pos1 and pos2, and changing the label
-
-        simplified_eqn = MathTex(r"\\ & \vec{A}_{res} = \vec{A}_1+\vec{A}_2", r"\\ & \tan\delta = \frac{A_2 \sin\Delta\phi}{A_1 + A_2 \cos\Delta\phi}", r"& y_{res} = A_{res} \sin(\omega t + \phi_1+ \delta)").shift(DOWN * 2.5 + LEFT * 4.5).scale(0.6) 
+        self.play(
+            c1.animate.center(),
+            c2.animate.move_to(c1.point_at_angle(theta + phi1)).shift(RIGHT*2),
+            run_time=1,
+            rate_func=linear
+        )
+        theta = theta_tracker.get_value()
         
-        ax3 = Axes(x_range=[-5, 5, 0.5], y_range=[-3.5, 3.5, 0.5], x_length=10, y_length=7, tips=False)
+        # Adding a new vector arrow that is the resultant of pos1 and pos2
 
-        pos3 = Arrow(start=c1.get_center(), end=p2.get_center(), buff=0, color=TEAL_A).set_opacity(0.75)
+        pos3 = Arrow(start=c1.get_center(), end=p2.get_center(), buff=0, color=PURPLE_B)
 
         def update_pos3(mob):
             mob.put_start_and_end_on(c1.get_center(), p2.get_center())
 
         pos3.add_updater(update_pos3)
 
-        self.play(
-            Create(pos3), 
-            Transform(new_eqn, simplified_eqn, replace_mobject_with_target_in_scene=True),
-            Transform(p2, Dot(color=TEAL_B).move_to(p2.get_center())),
-        )
-
-        # Making a new wave representing the resultant SHM
-        wave3 = always_redraw(lambda: ax3.plot(lambda x: np.sin(theta_tracker.get_value() + phi1 - x)*r1 + np.sin(theta_tracker.get_value() + phi2 - x)*r2, x_range=[0, 5], stroke_width=2, color=TEAL_B))
-
-        # Adding new axes
-
-        self.play(
-            Create(ax3),
-        )
+        self.play(Create(pos3), Transform(p2, Dot(color=PURPLE_B).move_to(p2.get_center())))
 
         # Adding updater to smaller circle to follow p1
 
         c2.add_updater(update_p1)
 
         self.play(
-            theta_tracker.animate.set_value(theta + omega * 4.5),
+            theta_tracker.animate.set_value(theta + omega0 * 4.5),
             run_time=4.5,
             rate_func=linear
         )
@@ -217,7 +167,7 @@ class Scene2(Scene):
         
         # Creating a dot to represent the resultant SHM
 
-        shm3 = Dot(color=TEAL, radius=0.1).move_to(np.array([0, p2.get_y(),0]))
+        shm3 = Dot(color=PURPLE, radius=0.1).move_to(np.array([0, p2.get_y(),0]))
 
         def update_shm3(mob):
             mob.move_to(np.array([0, p2.get_y(),0]))
@@ -225,44 +175,47 @@ class Scene2(Scene):
         shm3.add_updater(update_shm3)
 
         self.play(
-            theta_tracker.animate.set_value(theta + omega * 0.5),
+            theta_tracker.animate.set_value(theta + omega0 * 1),
             Create(shm3),
-            Create(wave3),
-            run_time=0.5,
+            FadeIn(label1),
+            FadeIn(label2),
+            pos3.animate.fade(darkness=0.6),
+            run_time=1,
             rate_func=linear
         )
         
         theta = theta_tracker.get_value()
     
         self.play(
-            theta_tracker.animate.set_value(theta + omega * 2.5),
-            run_time=2.5,
+            theta_tracker.animate.set_value(theta + omega0 * 1.5),
+            run_time=1.5,
+            rate_func=linear
+        )
+
+        theta = theta_tracker.get_value()
+
+        # Changing the label to the new equation
+
+        self.play(
+            theta_tracker.animate.set_value(theta + omega0 * 0.5),
+            Transform(VGroup(label1, label2),MathTex(r"y_{res} = A_1sin(\omega t + \phi_1) + A_2sin(\omega t + \phi_2)").shift(DOWN * 3).scale(0.8)),
+            run_time=0.5,
             rate_func=linear
         )
 
         theta = theta_tracker.get_value()
 
         self.play(
-            theta_tracker.animate.set_value(theta + omega * 8),
-            run_time= 8,
+            theta_tracker.animate.set_value(theta + omega0 * 6.5),
+            run_time= 6.5,
             rate_func=linear
-        )
-        theta = theta_tracker.get_value()
-
-        self.play(
-            theta_tracker.animate.set_value(theta + omega * 0.5),
-            run_time= 0.75,
-            rate_func=rate_functions.ease_out_sine
         )
         theta = theta_tracker.get_value()
 
         # Fading out everything
 
         self.play(
-            FadeOut(c1,c2,p1,p2,pos1,pos2,shm3,pos3),
-            Uncreate(ax3),
-            Uncreate(wave3),
-            Uncreate(simplified_eqn),
+            FadeOut(c1,c2,p1,p2,pos1,pos2,shm3,pos3,VGroup(label1, label2))
         )
 
         # Removing updaters
@@ -275,16 +228,5 @@ class Scene2(Scene):
         pos1.remove_updater(update_p1)
         pos2.remove_updater(update_p2)
         pos3.remove_updater(update_pos3)
-
-        # Display Credits
-
-        creditsText = VGroup(
-            Text("Created by Trinethr", font_size=28, gradient=(BLUE, TEAL, GREEN)),
-            Text("https://brin.is-a.dev/", font_size=18)
-        ).arrange(DOWN)
-
-        self.play(Write(creditsText))
-        self.wait()
-        self.play(Unwrite(creditsText, reverse=False))
 
         self.wait()
