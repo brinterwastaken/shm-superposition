@@ -2,7 +2,6 @@ from manim import *
 
 class Scene2(Scene):
     def construct(self):
-
         # Axes
 
         ax1 = Axes(x_range=[-3.5, 3.5, 0.5], y_range=[-3, 3, 0.5], x_length=7, y_length=6, tips=False).move_to(LEFT*2.5) 
@@ -22,8 +21,8 @@ class Scene2(Scene):
         p1 = Dot(color=BLUE_B).move_to(c1.point_at_angle(phi1))
         p2 = Dot(color=GREEN_B).move_to(c2.point_at_angle(phi2))
 
-        pos1 = Arrow(start=c1.get_center(), end=p1.get_center(), buff=0)
-        pos2 = Arrow(start=c2.get_center(), end=p2.get_center(), buff=0)
+        pos1 = Arrow(start=c1.get_center(), end=p1.get_center(), buff=0, stroke_width=4, tip_shape=StealthTip, tip_length=0.175)
+        pos2 = Arrow(start=c2.get_center(), end=p2.get_center(), buff=0, stroke_width=4, tip_shape=StealthTip, tip_length=0.175)
 
         shm1 = Dot(color=BLUE, radius=0.1).move_to(np.array([c1.get_x(), p1.get_y(),0]))
         shm2 = Dot(color=GREEN, radius=0.1).move_to(np.array([c2.get_x(), p2.get_y(),0]))
@@ -116,7 +115,7 @@ class Scene2(Scene):
         theta = theta_tracker.get_value()
 
         # Showing how SHM is related to the circular motion
-
+        
         self.play(
             theta_tracker.animate.set_value(theta + omega * 0.5),
             Create(shm1),
@@ -178,11 +177,14 @@ class Scene2(Scene):
 
         # Adding a new vector arrow that is the resultant of pos1 and pos2, and changing the label
 
-        simplified_eqn = MathTex(r"\\ & \vec{A}_{res} = \vec{A}_1+\vec{A}_2", r"\\ & \tan\delta = \frac{A_2 \sin\Delta\phi}{A_1 + A_2 \cos\Delta\phi}", r"& y_{res} = A_{res} \sin(\omega t + \phi_1+ \delta)").shift(DOWN * 2.5 + LEFT * 4.5).scale(0.6) 
+        simplified_eqn = VGroup(
+            MathTex(r"& \vec{A}_{res} = \vec{A}_1+\vec{A}_2", r"\\ & \tan\delta = \frac{A_2 \sin\Delta\phi}{A_1 + A_2 \cos\Delta\phi}").scale(0.6),
+            MathTex(r"& y_{res} = A_{res} \sin(\omega t + \phi_1+ \delta)").set_color_by_gradient(BLUE,TEAL,GREEN).scale(0.7)
+        ).arrange(DOWN, aligned_edge = LEFT).shift(DOWN * 2.5 + LEFT * 4.5) 
         
         ax3 = Axes(x_range=[-5, 5, 0.5], y_range=[-3.5, 3.5, 0.5], x_length=10, y_length=7, tips=False)
 
-        pos3 = Arrow(start=c1.get_center(), end=p2.get_center(), buff=0, color=TEAL_A).set_opacity(0.75)
+        pos3 = Arrow(start=c1.get_center(), end=p2.get_center(), buff=0, stroke_width=4, tip_shape=StealthTip, tip_length=0.225, color=TEAL_A).set_opacity(0.75)
 
         def update_pos3(mob):
             mob.put_start_and_end_on(c1.get_center(), p2.get_center())
@@ -231,7 +233,6 @@ class Scene2(Scene):
             run_time=0.5,
             rate_func=linear
         )
-        
         theta = theta_tracker.get_value()
     
         self.play(
@@ -239,7 +240,6 @@ class Scene2(Scene):
             run_time=2.5,
             rate_func=linear
         )
-
         theta = theta_tracker.get_value()
 
         self.play(
@@ -286,5 +286,5 @@ class Scene2(Scene):
         self.play(Write(creditsText))
         self.wait()
         self.play(Unwrite(creditsText, reverse=False))
-
+        
         self.wait()
